@@ -14,5 +14,19 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage("static code analasis"){
+            steps {
+                withSonarQubeEnv("sonarqube"){
+                    sh "mvn sonar:sonar"
+                }
+            }
+        }
+        stage("Quality Gate Status"){
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar_token'
+                }
+            }
+        }
     }
 }
